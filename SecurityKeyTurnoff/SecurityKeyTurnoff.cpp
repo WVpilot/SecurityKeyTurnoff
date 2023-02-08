@@ -2,10 +2,22 @@
 //
 
 #include <iostream>
+#include <Windows.h>
 
 int main()
 {
-    std::cout << "Hello World!\n";
+    bool keyIn;
+    keyIn = false;
+
+    if (keyIn)
+    {
+
+    }
+    else
+    {
+        ExitWindowsEx(EWX_LOGOFF, 0xffffffff);
+    }
+    return 0;
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
