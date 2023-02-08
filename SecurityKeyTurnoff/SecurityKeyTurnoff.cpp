@@ -15,7 +15,7 @@ int main()
     }
     else
     {
-        ExitWindowsEx(EWX_LOGOFF, 0xffffffff)
+        ExitWindowsEx(EWX_LOGOFF, 0xffffffff);
     }
     return 0;
 }
