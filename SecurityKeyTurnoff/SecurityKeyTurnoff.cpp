@@ -5,16 +5,25 @@
 // user after a USB security key has been removed
 
 #include <iostream>
+#include <fstream>
 #include <Windows.h>
 #include <setupapi.h>
+//#define PATH (getenv('CSIDL_APPDATA') + '\SecurityKeyTurnoff\log.txt')
 
-int main()
+int main(int argc, char* argv[])
 {
     //Initialize variables
     HDEVINFO devInfoSet;
     SP_DEVINFO_DATA devInfoData;
+    char friendly_name[2046] = { 0 };
+    DWORD DataT;
+    DWORD bufferSize = 2046;
+    DWORD reqBufferSize = 0;
     bool keyIn;
-    int devIndex;
+    int devIndex = 0;
+    int error;
+    //File for log
+
 
     //Check for key and make device list
     devInfoSet = SetupDiGetClassDevsW(NULL, NULL, NULL, DIGCF_ALLCLASSES | DIGCF_PRESENT);
@@ -36,6 +45,14 @@ int main()
             {
                 devIndex++;
 
+                if (!SetupDiGetDeviceRegistryPropertyA(devInfoSet, &devInfoData, SPDRP_FRIENDLYNAME, &DataT, (PBYTE)friendly_name, bufferSize, &reqBufferSize))
+                {
+                    error = GetLastError();
+                    if (error == ERROR_NOT_FOUND)
+                    {
+
+                    }
+                }
             }
         }
 
