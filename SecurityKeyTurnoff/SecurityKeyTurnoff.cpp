@@ -1,32 +1,64 @@
-// SecurityKeyTurnoff.cpp : This file contains the 'main' function. Program execution begins and ends there.
-//
+// SecurityKeyTurnoff.cpp : This file contains the 'main' function. 
+// Program execution begins and ends there.
+// Made by Jack Redden, credit to Microsoft Documentation
+// The purpose of this program is to disable or logoff the adminastrator 
+// user after a USB security key has been removed
 
 #include <iostream>
 #include <Windows.h>
+#include <setupapi.h>
 
 int main()
 {
+    //Initialize variables
+    HDEVINFO devInfoSet;
+    SP_DEVINFO_DATA devInfoData;
     bool keyIn;
-    keyIn = false;
+    int devIndex;
 
+    //Check for key and make device list
+    devInfoSet = SetupDiGetClassDevsW(NULL, NULL, NULL, DIGCF_ALLCLASSES | DIGCF_PRESENT);
+    ZeroMemory(&devInfoData, sizeof(SP_DEVINFO_DATA));
+    devInfoData.cbSize = sizeof(SP_DEVINFO_DATA);
+
+    //Start of functionality
+    //Start checking automatically if key is still inserted
     if (keyIn)
     {
+        while (keyIn)
+        {
+            devIndex = 0;
 
+            while (SetupDiEnumDeviceInfo(
+                devInfoSet,
+                devIndex,
+                &devInfoData))/*THAT STUPID POINTER*/
+            {
+                devIndex++;
+
+            }
+        }
+
+        //Release the device list
+        if (devInfoSet)
+        {
+            SetupDiDestroyDeviceInfoList(devInfoSet);
+        }
+
+        //Return the value of ExitWindows after informing to logoff, with security reason (possibly going to change reason or revert back to 0xffffffff)
+        return ExitWindowsEx(EWX_LOGOFF, SHTDN_REASON_MINOR_SECURITY);
     }
+
+    //Log Windows of automatically if key is not detected automatically
     else
     {
-        ExitWindowsEx(EWX_LOGOFF, 0xffffffff);
+        //Release the device list
+        if (devInfoSet)
+        {
+            SetupDiDestroyDeviceInfoList(devInfoSet);
+        }
+        
+        //Return the value of ExitWindows after informing to logoff, with security reason (possibly going to change reason or revert back to 0xffffffff)
+        return ExitWindowsEx(EWX_LOGOFF, SHTDN_REASON_MINOR_SECURITY);
     }
-    return 0;
 }
-
-// Run program: Ctrl + F5 or Debug > Start Without Debugging menu
-// Debug program: F5 or Debug > Start Debugging menu
-
-// Tips for Getting Started: 
-//   1. Use the Solution Explorer window to add/manage files
-//   2. Use the Team Explorer window to connect to source control
-//   3. Use the Output window to see build output and other messages
-//   4. Use the Error List window to view errors
-//   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files to the project
-//   6. In the future, to open this project again, go to File > Open > Project and select the .sln file
